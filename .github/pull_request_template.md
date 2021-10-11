@@ -9,7 +9,7 @@ Briefly describe the root cause and analysis of the problem.
 - Also add some screenshots to show your work...
 
 ## Checklist
-- [ ] I've read the [Contribution Guidelines](https://github.com/sushant-iit/QuickBills/blob/master/CONTRIBUTING.md).
+- [ ] I've read the [Contribution Guidelines](/CONTRIBUTING.md).
 - [ ] I've tested that the application is performing well and there is no breaking changes.
 
 ## Related Issues / Pull Requests
