@@ -5,6 +5,7 @@ import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.ktx.auth
@@ -82,35 +83,47 @@ class SignUpActivity : AppCompatActivity() {
                 //Set user profile
                 val profileUpdates = UserProfileChangeRequest.Builder()
                     .setDisplayName(userName).build()
-                user!!.updateProfile(profileUpdates).addOnCompleteListener {
-                    profile_update_task->
-                    if(profile_update_task.isSuccessful){
-                        //For preventing garbage users - Send Verification Mail
+                val newUser = User()
+
+                //These activities need to be done simultaneously
+                val profileUpdateTask = user!!.updateProfile(profileUpdates)
+                val addUserToDbTask = database.child(USERS_FIELD).child(auth.currentUser!!.uid).setValue(newUser)
+
+                val combinedTask = Tasks.whenAll(mutableListOf(profileUpdateTask, addUserToDbTask))
+                combinedTask.addOnCompleteListener {
+                    combined_task_result->
+                    if(combined_task_result.isSuccessful){
                         user.sendEmailVerification().addOnCompleteListener{
-                            if(it.isSuccessful){
-                                //Set default values to the database
-                                    val newUser = User()
-                                database.child(USERS_FIELD).child(auth.currentUser!!.uid).setValue(newUser)
+                            send_mail_task->
+                            if(send_mail_task.isSuccessful){
                                 Toast.makeText(this, "User Registered Successfully", Toast.LENGTH_SHORT).show()
                                 Toast.makeText(this, "Check your inbox and verify your email!!", Toast.LENGTH_SHORT).show()
+                                finish()
                             }else{
-                                Log.w("Error", it.exception)
-                                Toast.makeText(this, it.exception!!.localizedMessage, Toast.LENGTH_LONG).show()
+                                sign_up_in_proceed_btn.isEnabled = true
+                                sign_up_in_proceed_btn.isClickable = true
+                                Log.w("Error", send_mail_task.exception)
+                                Toast.makeText(this, send_mail_task.exception!!.localizedMessage, Toast.LENGTH_LONG).show()
                             }
                         }
-                    }else{
-                        Log.w("Error", profile_update_task.exception)
-                        Toast.makeText(this, profile_update_task.exception!!.localizedMessage, Toast.LENGTH_LONG).show()
+                    }else{  //Revert the changes now
+                        if(addUserToDbTask.isSuccessful)
+                            database.child(USERS_FIELD).child(auth.currentUser!!.uid).removeValue()
+                        if(auth.currentUser != null)
+                            auth.currentUser!!.delete()
+                        sign_up_in_proceed_btn.isEnabled = true
+                        sign_up_in_proceed_btn.isClickable = true
+                        Log.e("Error", combined_task_result.exception.toString())
+                        Toast.makeText(this, combined_task_result.exception!!.localizedMessage, Toast.LENGTH_LONG).show()
                     }
-                    finish()
                 }
 
             } else {
+                sign_up_in_proceed_btn.isEnabled = true
+                sign_up_in_proceed_btn.isClickable = true
                 Log.w("Error", "SignUpWithEmailCreate:Failure", task.exception)
                 Toast.makeText(this, task.exception!!.localizedMessage, Toast.LENGTH_LONG).show()
             }
-            sign_up_in_proceed_btn.isEnabled = true
-            sign_up_in_proceed_btn.isClickable = true
         }
     }
 }
