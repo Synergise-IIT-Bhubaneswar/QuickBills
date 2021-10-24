@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.sushant.quickbills.R
@@ -81,30 +82,32 @@ class LoginActivity : AppCompatActivity() {
                             }
                         }
                     }
-            }else{
-                //If auth fails, means high chances are there of forgetting password
-                val msg = "Forgot Password?"
-                resetResend.text = msg
-                resetResend.visibility = View.VISIBLE
-                resetResend.setOnClickListener {
-                    val view = layoutInflater.inflate(R.layout.pop_up_reset_password, null, false)
-                    val submitBtn = view.reset_password_pop_up_btn
-                    val email = view.reset_email_entered
-                    val dialog = AlertDialog.Builder(this).setView(view).create()
-                    submitBtn.setOnClickListener {
-                        val enteredEmail = email.text
-                        auth.sendPasswordResetEmail(enteredEmail.toString()).addOnCompleteListener{
-                            sendResetMailTask->
-                            if(sendResetMailTask.isSuccessful){
-                                Toast.makeText(this, "Reset Email sent to your email successfully", Toast.LENGTH_LONG).show()
-                                dialog.dismiss()
-                            }else{
-                                Toast.makeText(this, sendResetMailTask.exception!!.localizedMessage, Toast.LENGTH_LONG).show()
-                                Log.w("Error", sendResetMailTask.exception)
+            } else {
+                //If user is not invalid, means password was incorrect so we ask if forgotten
+                if(task.exception !is FirebaseAuthInvalidUserException){
+                    val msg = "Forgot Password?"
+                    resetResend.text = msg
+                    resetResend.visibility = View.VISIBLE
+                    resetResend.setOnClickListener {
+                        val view = layoutInflater.inflate(R.layout.pop_up_reset_password, null, false)
+                        val submitBtn = view.reset_password_pop_up_btn
+                        val email = view.reset_email_entered
+                        val dialog = AlertDialog.Builder(this).setView(view).create()
+                        submitBtn.setOnClickListener {
+                            val enteredEmail = email.text
+                            auth.sendPasswordResetEmail(enteredEmail.toString()).addOnCompleteListener{
+                                    sendResetMailTask->
+                                if(sendResetMailTask.isSuccessful){
+                                    Toast.makeText(this, "Reset Email sent to your email successfully", Toast.LENGTH_LONG).show()
+                                    dialog.dismiss()
+                                }else{
+                                    Toast.makeText(this, sendResetMailTask.exception!!.localizedMessage, Toast.LENGTH_LONG).show()
+                                    Log.w("Error", sendResetMailTask.exception)
+                                }
                             }
                         }
+                        dialog.show()
                     }
-                    dialog.show()
                 }
                 Log.w("Error", "LogInWithEmail:Failure", task.exception)
                 Toast.makeText(this, task.exception!!.localizedMessage, Toast.LENGTH_LONG).show()
