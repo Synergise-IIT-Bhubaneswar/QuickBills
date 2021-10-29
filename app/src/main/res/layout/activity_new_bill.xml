@@ -39,7 +39,7 @@
             <TextView
                 android:id="@+id/customer_name"
                 style="@style/TextAppearance.Compat.Notification.Info.Media"
-                android:layout_width="wrap_content"
+                android:layout_width="170dp"
                 android:layout_height="wrap_content"
                 android:layout_above="@id/customer_mobile_view_id"
                 android:layout_marginStart="20dp"
@@ -51,7 +51,7 @@
             <TextView
                 android:id="@+id/customer_address_text_view_id"
                 style="@style/TextAppearance.Compat.Notification.Info.Media"
-                android:layout_width="wrap_content"
+                android:layout_width="170dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/customer_mobile_view_id"
                 android:layout_alignStart="@id/customer_name"
@@ -63,7 +63,7 @@
             <TextView
                 android:id="@+id/customer_mobile_view_id"
                 style="@style/TextAppearance.Compat.Notification.Info.Media"
-                android:layout_width="wrap_content"
+                android:layout_width="170dp"
                 android:layout_height="wrap_content"
                 android:layout_alignStart="@id/customer_name"
                 android:layout_centerVertical="true"
@@ -76,9 +76,9 @@
                 android:id="@+id/bill_amount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="20dp"
+                android:layout_marginStart="10dp"
+                android:layout_toEndOf="@+id/customer_mobile_view_id"
                 android:text="@string/bill_amount_dummy_text"
                 android:textColor="@color/secondary"
                 android:textSize="34sp"

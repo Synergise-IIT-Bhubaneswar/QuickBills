@@ -24,6 +24,7 @@ import com.sushant.quickbills.model.Customer
 import com.sushant.quickbills.model.Item
 import com.sushant.quickbills.utils.createOrShowBillPDF
 import com.sushant.quickbills.utils.isNetworkAvailable
+import com.sushant.quickbills.utils.preprocessDisplayText
 import kotlinx.android.synthetic.main.activity_all_bills.*
 import kotlinx.android.synthetic.main.activity_new_bill.*
 import kotlinx.android.synthetic.main.pop_up_delete.view.*
@@ -190,7 +191,7 @@ class NewBillActivity : AppCompatActivity(), RecyclerParticularsAdapter.OnClickL
                 )
                 particularList.add(newParticularItem)
                 totalAmount += amount
-                bill_amount.text = getString(R.string.rupee, totalAmount)
+                bill_amount.text=(getString(R.string.rupee_symbol_only)+" "+preprocessDisplayText(totalAmount))
                 recyclerParticularsAdapter.notifyDataSetChanged()
                 dialog.dismiss()
             }

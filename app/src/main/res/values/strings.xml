@@ -70,6 +70,7 @@
     <string name="bill_amount_dummy_text">₹ 0.0</string>
     <string name="amount_text">Amount</string>
     <string name="rupee">₹ %1$.1f</string>
+    <string name="rupee_symbol_only">₹</string>
     <string name="save_title">Save</string>
     <string name="exit_msg">Want to discard all data and exit?</string>
     <string name="exit_btn_text">Yes</string>
